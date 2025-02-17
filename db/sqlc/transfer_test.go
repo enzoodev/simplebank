@@ -67,8 +67,8 @@ func TestListTransfer(t *testing.T) {
 	}
 
 	arg := ListTransfersParams{
-		FromAccountID: util.Int64ToNullInt64(fromAccount.ID),
-		ToAccountID: util.Int64ToNullInt64(toAccount.ID),
+		FromAccountID: fromAccount.ID,
+		ToAccountID: toAccount.ID,
 		Limit: 5,
 		Offset: 0,
 	}
@@ -79,6 +79,6 @@ func TestListTransfer(t *testing.T) {
 
 	for _, transfer := range transfers {
 		require.NotEmpty(t, transfer)
-		require.True(t, transfer.FromAccountID.Int64 == fromAccount.ID || transfer.ToAccountID.Int64 == toAccount.ID)
+		require.True(t, transfer.FromAccountID == fromAccount.ID || transfer.ToAccountID == toAccount.ID)
 	}
 }

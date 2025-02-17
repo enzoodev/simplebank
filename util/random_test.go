@@ -38,19 +38,3 @@ func TestRandomCurrency(t *testing.T) {
 	}
 	require.True(t, validCurrencies[currency], "currency should be one of USD, EUR, or CAD")
 }
-
-func TestInt64ToNullInt64(t *testing.T) {
-	value := int64(12345)
-	nullInt64 := Int64ToNullInt64(value)
-
-	require.Equal(t, value, nullInt64.Int64, "expected and actual values don't match")
-	require.True(t, nullInt64.Valid, "sql.NullInt64 should be valid")
-}
-
-func TestInt64ToNullInt64Zero(t *testing.T) {
-	value := int64(0)
-	nullInt64 := Int64ToNullInt64(value)
-
-	require.Equal(t, value, nullInt64.Int64, "expected 0 but got different value")
-	require.True(t, nullInt64.Valid, "sql.NullInt64 should be valid when the value is 0")
-}

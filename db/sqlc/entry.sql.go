@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createEntry = `-- name: CreateEntry :one
@@ -20,7 +19,7 @@ INSERT INTO entries (
 `
 
 type CreateEntryParams struct {
-	AccountID sql.NullInt64 `json:"account_id"`
+	AccountID int64 `json:"account_id"`
 	Amount    int64         `json:"amount"`
 }
 
@@ -62,7 +61,7 @@ OFFSET $3
 `
 
 type ListEntriesParams struct {
-	AccountID sql.NullInt64 `json:"account_id"`
+	AccountID int64 `json:"account_id"`
 	Limit     int32         `json:"limit"`
 	Offset    int32         `json:"offset"`
 }

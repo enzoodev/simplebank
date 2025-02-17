@@ -13,7 +13,7 @@ func createRandomEntry(t *testing.T) Entry {
 	account := createRandomAccount(t)
 	
 	arg := CreateEntryParams{
-		AccountID: util.Int64ToNullInt64(account.ID),
+		AccountID: account.ID,
 		Amount: util.RandomMoney(),
 	}
 
@@ -52,7 +52,7 @@ func TestListEntry(t *testing.T) {
 
 	for i := 0; i < 10; i++ {
 		arg := CreateEntryParams{
-			AccountID: util.Int64ToNullInt64(account.ID),
+			AccountID: account.ID,
 			Amount: util.RandomMoney(),
 		}
 
@@ -61,7 +61,7 @@ func TestListEntry(t *testing.T) {
 	}
 
 	arg := ListEntriesParams{
-		AccountID: util.Int64ToNullInt64(account.ID),
+		AccountID: account.ID,
 		Limit: 5,
 		Offset: 0,
 	}
@@ -72,6 +72,6 @@ func TestListEntry(t *testing.T) {
 
 	for _, entry := range entries {
 		require.NotEmpty(t, entry)
-		require.True(t, entry.AccountID.Int64 == account.ID)
+		require.True(t, entry.AccountID == account.ID)
 	}
 }

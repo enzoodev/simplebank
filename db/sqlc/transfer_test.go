@@ -14,8 +14,8 @@ func createRandomTransfer(t *testing.T) Transfer {
 	toAccount := createRandomAccount(t)
 	
 	arg := CreateTransferParams{
-		FromAccountID: util.Int64ToNullInt64(fromAccount.ID),
-		ToAccountID: util.Int64ToNullInt64(toAccount.ID),
+		FromAccountID: fromAccount.ID,
+		ToAccountID: toAccount.ID,
 		Amount: util.RandomMoney(),
 	}
 
@@ -57,8 +57,8 @@ func TestListTransfer(t *testing.T) {
 
 	for i := 0; i < 10; i++ {
 		arg := CreateTransferParams{
-			FromAccountID: util.Int64ToNullInt64(fromAccount.ID),
-			ToAccountID: util.Int64ToNullInt64(toAccount.ID),
+			FromAccountID: fromAccount.ID,
+			ToAccountID: toAccount.ID,
 			Amount: util.RandomMoney(),
 		}
 

@@ -29,8 +29,8 @@ func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
 	err = fn(q)
 
 	if err != nil {
-		if rbErr := tx.Rollback(); rbErr != nil {
-			return fmt.Errorf("tx error: %v, rb error: %v", err, rbErr)
+		if rollbackError := tx.Rollback(); rollbackError != nil {
+			return fmt.Errorf("tx error: %v, rb error: %v", err, rollbackError)
 		}
 		return err
 	}

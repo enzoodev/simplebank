@@ -13,14 +13,13 @@ func TestTransferTx(t *testing.T) {
 	firstAccount := createRandomAccount(t)
 	secondAccount := createRandomAccount(t)
 
-	// run n concurrent transfer transactions
-	n := 5
+	concurrentTransfers := 5
 	amount := int64(10)
 
 	errs := make(chan error)
 	results := make(chan TransferTxResult)
 
-	for i := 0; i < n; i++ {
+	for i := 0; i < concurrentTransfers; i++ {
 		go func() {
 			result, err := store.TransferTx(context.Background(), TransferTxParams{
 				FromAccountID: firstAccount.ID,
@@ -33,8 +32,10 @@ func TestTransferTx(t *testing.T) {
 		}()
 	}
 
+	existed := make(map[int]bool)
+
 	// check results
-	for i := 0; i < n; i++ {
+	for i := 0; i < concurrentTransfers; i++ {
 		err := <-errs
 		require.NoError(t, err)
 
@@ -74,6 +75,34 @@ func TestTransferTx(t *testing.T) {
 		_, err = store.GetEntry(context.Background(), toEntry.ID)
 		require.NoError(t, err)
 
-		// TODO: Scheck accounts
+		fromAccount := result.FromAccount
+		require.NotEmpty(t, fromAccount)
+		require.Equal(t, firstAccount.ID, fromAccount.ID)
+
+		toAccount := result.ToAccount
+		require.NotEmpty(t, toAccount)
+		require.Equal(t, secondAccount.ID, toAccount.ID)
+
+		firstDifference := firstAccount.Balance - fromAccount.Balance
+		secondDifference := toAccount.Balance - secondAccount.Balance
+
+		require.Equal(t, firstDifference, secondDifference)
+		require.True(t, firstDifference > 0)
+		require.True(t, firstDifference%amount == 0) // amount must be multiple of concurrentTransfers
+
+		k := int(firstDifference / amount)
+		require.True(t, k >= 1 && k <= concurrentTransfers)
+		require.NotContains(t, existed, k)
+		existed[k] = true
 	}
+
+	// check the final updated balance
+	updatedFirstAccount, err := testQueries.GetAccount(context.Background(), firstAccount.ID)
+	require.NoError(t, err)
+
+	updatedSecondAccount, err := testQueries.GetAccount(context.Background(), secondAccount.ID)
+	require.NoError(t, err)
+
+	require.Equal(t, firstAccount.Balance-int64(concurrentTransfers)*amount, updatedFirstAccount.Balance)
+	require.Equal(t, secondAccount.Balance+int64(concurrentTransfers)*amount, updatedSecondAccount.Balance)
 }
